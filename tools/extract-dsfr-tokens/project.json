@@ -1,0 +1,37 @@
+{
+  "name": "extract-dsfr-tokens",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/extract-dsfr-tokens/src",
+  "projectType": "library",
+  "tags": ["type:tool"],
+  "targets": {
+    "extract": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/src/**/*.ts",
+        "!{projectRoot}/src/**/*.spec.ts",
+        { "externalDependencies": ["@gouvfr/dsfr", "postcss", "prettier"] }
+      ],
+      "outputs": ["{workspaceRoot}/packages/preset-dsfr/src/tokens/generated"],
+      "cache": true,
+      "options": {
+        "commands": [
+          "node tools/extract-dsfr-tokens/src/main.ts",
+          "prettier --write packages/preset-dsfr/src/tokens/generated"
+        ],
+        "parallel": false
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", { "externalDependencies": ["typescript"] }],
+      "options": {
+        "commands": [
+          "tsc -p tools/extract-dsfr-tokens/tsconfig.lib.json",
+          "tsc -p tools/extract-dsfr-tokens/tsconfig.spec.json"
+        ]
+      }
+    }
+  }
+}

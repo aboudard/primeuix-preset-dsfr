@@ -16,23 +16,23 @@ utilisable par PrimeNG, PrimeVue et PrimeReact (les trois consomment `@primeuix/
 
 ### Décisions prises
 
-| Sujet | Décision | Raison |
-|---|---|---|
-| Mode de thème | **Styled** (preset de design tokens) + CSS d'appoint via la clé `css` du preset | Un seul paquet commun aux 3 librairies ; le mode unstyled imposerait de réécrire le CSS de 80+ composants et des `pt` spécifiques à chaque framework |
-| Unstyled / pass-through | Exception ponctuelle, documentée composant par composant | Seulement quand le DOM Prime ne permet pas d'approcher le DSFR |
-| Preset de base | **Nora** (`@primeuix/themes/nora`) | Plus anguleux et sobre qu'Aura, plus proche du DSFR (à reconfirmer en phase 3) |
-| Mode sombre | `darkModeSelector: '[data-fr-theme="dark"]'` | Compatible avec le sélecteur de thème du DSFR |
-| Police | Marianne **non embarquée** ; pile `Marianne, arial, sans-serif` | Marque de l'État : la police est fournie par l'application consommatrice |
-| Paquet npm | `primeuix-preset-dsfr` (ESM, `@primeuix/themes` en peerDependency) | |
-| Démo de départ | Angular / PrimeNG (`apps/demo-ng`) ; Vue et React plus tard | |
+| Sujet                   | Décision                                                                        | Raison                                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mode de thème           | **Styled** (preset de design tokens) + CSS d'appoint via la clé `css` du preset | Un seul paquet commun aux 3 librairies ; le mode unstyled imposerait de réécrire le CSS de 80+ composants et des `pt` spécifiques à chaque framework |
+| Unstyled / pass-through | Exception ponctuelle, documentée composant par composant                        | Seulement quand le DOM Prime ne permet pas d'approcher le DSFR                                                                                       |
+| Preset de base          | **Nora** (`@primeuix/themes/nora`)                                              | Plus anguleux et sobre qu'Aura, plus proche du DSFR (à reconfirmer en phase 3)                                                                       |
+| Mode sombre             | `darkModeSelector: '[data-fr-theme="dark"]'`                                    | Compatible avec le sélecteur de thème du DSFR                                                                                                        |
+| Police                  | Marianne **non embarquée** ; pile `Marianne, arial, sans-serif`                 | Marque de l'État : la police est fournie par l'application consommatrice                                                                             |
+| Paquet npm              | `primeuix-preset-dsfr` (ESM, `@primeuix/themes` en peerDependency)              |                                                                                                                                                      |
+| Démo de départ          | Angular / PrimeNG (`apps/demo-ng`) ; Vue et React plus tard                     |                                                                                                                                                      |
 
 ### Points d'attention
 
 - **Licence PrimeUI** : PrimeNG 22, PrimeVue 5, PrimeReact 11 et `@primeuix/themes` sont sous
-  *PrimeUI License* (plus MIT). Une clé est requise, sinon un bandeau « Invalid PrimeUI License »
+  _PrimeUI License_ (plus MIT). Une clé est requise, sinon un bandeau « Invalid PrimeUI License »
   s'affiche. La clé locale est lue depuis `apps/demo-ng/public/primeui-license.txt`
   (**ignoré par git, ne jamais commiter ni afficher la clé**). Modèle : `primeui-license.example.txt`.
-  La clé actuelle est de type *Community* (réservée aux petites structures) : un usage
+  La clé actuelle est de type _Community_ (réservée aux petites structures) : un usage
   professionnel demandera une licence commerciale.
 - **Marque de l'État** : le DSFR (Marianne, bloc-marque, identité visuelle) est réservé aux sites
   de l'État. Le preset ne doit pas se présenter comme « DSFR officiel » ; le documenter.
@@ -55,7 +55,12 @@ TypeScript 6.0 · Node 24 · npm 11.
 - Lancer les tâches via Nx, préfixées par npm : `npm exec nx -- run-many -t lint test build`.
   En session Claude Code, préfixer par `CLAUDECODE=` si une commande Nx bascule en mode
   « agent » non désiré (ex. `create-nx-workspace` ignorait `--workspaces=false`).
-- Tags de projet : `type:app` (applications), `type:shared` (librairies).
+- Tags de projet : `type:app` (applications), `type:shared` (librairies), `type:tool` (outillage).
+- Tokens DSFR : `npm exec nx -- run extract-dsfr-tokens:extract` régénère
+  `packages/preset-dsfr/src/tokens/generated/` (à relancer et commiter après chaque montée de
+  `@gouvfr/dsfr`). Correspondance DSFR → Prime : `docs/TOKENS.md`.
+- Outils Node (`tools/*`) : TypeScript exécuté directement par Node 24 (_type stripping_) ;
+  imports avec extension `.ts`, syntaxe effaçable uniquement (`erasableSyntaxOnly`).
 - `@gouvfr/dsfr` est installé en devDependency **avec `--ignore-scripts`** (son postinstall exige
   un projet DSFR initialisé). Il sert uniquement de **source de tokens**, jamais au runtime.
 - Démo : `npm exec nx -- serve demo-ng` → http://localhost:4200.
@@ -70,7 +75,10 @@ apps/demo-ng/                     # démo PrimeNG (Angular 22, zoneless, vitest)
   src/app/app.config.ts           # createAppConfig(license) + providePrimeNG
 packages/preset-dsfr/             # librairie publiable primeuix-preset-dsfr
   src/lib/preset-dsfr.ts          # PresetDsfr = definePreset(Nora, {...})
+  src/tokens/generated/           # tokens DSFR générés (phase 1) – ne pas éditer
+tools/extract-dsfr-tokens/        # extraction des tokens (cibles extract, test, typecheck)
 docs/ROADMAP.md                   # ce fichier
+docs/TOKENS.md                    # tokens générés et table DSFR → Prime
 ```
 
 Arborescence cible du preset (à construire au fil des phases) :
@@ -100,7 +108,7 @@ tools/extract-dsfr-tokens/  # script d'extraction (phase 1)
 Workspace Nx, démo PrimeNG, preset minimal (bleu France, rayons, anneau de focus DSFR), gestion de
 la clé PrimeUI, dépôt GitHub. Lint / test / build verts.
 
-### Phase 1 – Extraction des tokens DSFR
+### Phase 1 – Extraction des tokens DSFR ✅
 
 **But** : générer automatiquement les primitives du preset depuis `@gouvfr/dsfr`, pour ne plus
 saisir de valeurs à la main et suivre les montées de version du DSFR.
@@ -110,6 +118,7 @@ saisir de valeurs à la main et suivre les montées de version du DSFR.
 espacements).
 
 **Travail** :
+
 1. Créer un projet Nx `tools/extract-dsfr-tokens` (script Node/TS) avec une cible
    `nx run extract-dsfr-tokens:extract`.
 2. Parser les variables CSS du DSFR (bibliothèque `postcss` recommandée) :
@@ -135,6 +144,7 @@ preset compile et la démo est inchangée visuellement (ou améliorée), lint/te
 **But** : découper le preset selon l'arborescence cible et préparer l'extensibilité.
 
 **Travail** :
+
 1. Scinder `preset-dsfr.ts` en `primitive.ts`, `semantic.ts`, `components/`, `css/`.
 2. Exposer une option « pont » : `createPresetDsfr({ bridge: true })` où les primitives renvoient
    vers les variables CSS du DSFR (`var(--blue-france-sun-113-625)`) quand `dsfr.css` est déjà
@@ -151,6 +161,7 @@ vérifié.
 **But** : que tout composant Prime « non retouché » ait déjà l'air DSFR.
 
 **Travail** :
+
 - `primary` : bleu France (repos `#000091`, hover `#1212ff`, actif `#2323ff`) ; équivalent sombre.
 - `surface` : gris DSFR (clair et sombre).
 - `focusRing` : `2px solid #0a76f6`, offset `2px` (signature RGAA du DSFR).
@@ -175,6 +186,7 @@ MultiSelect, AutoComplete, Tree, TreeSelect, Menu, Menubar, Toast, Splitter, Dra
 mise en avant, bandeau de consentement.
 
 **Pour chaque composant** :
+
 1. Surcharger les design tokens dans `components/<nom>.ts`.
 2. Ajouter le CSS d'appoint nécessaire dans `css/<nom>.ts` (clé `css` du preset).
 3. Ajouter une section dans la démo, à côté du rendu DSFR de référence (capture ou HTML DSFR).
@@ -217,14 +229,14 @@ lint/test/build verts.
 
 ## Suivi
 
-| Phase | Statut | Date | Notes |
-|---|---|---|---|
-| 0 – Initialisation | ✅ Terminée | 2026-11-23 | |
-| 1 – Extraction des tokens | À faire | | |
-| 2 – Architecture | À faire | | |
-| 3 – Tokens sémantiques | À faire | | |
-| 4 – Composants lot 1 | À faire | | |
-| 4 – Composants lot 2 | À faire | | |
-| 5 – Validation | À faire | | |
-| 6 – Démos Vue / React | À faire | | |
-| 7 – Packaging | À faire | | |
+| Phase                     | Statut      | Date       | Notes                                                                                                                                                                                                                                                                                            |
+| ------------------------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0 – Initialisation        | ✅ Terminée | 2026-11-23 |                                                                                                                                                                                                                                                                                                  |
+| 1 – Extraction des tokens | ✅ Terminée | 2026-11-23 | 24 familles, 612 tokens décisionnels, typo, espacements, rayons, focus. Échelles non strictement monotones pour certaines familles (600/700 = états DSFR) et pas interpolés pour les couleurs système : voir `docs/TOKENS.md`. Avertissement de budget du bundle `demo-ng` (500 kB) préexistant. |
+| 2 – Architecture          | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| 3 – Tokens sémantiques    | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| 4 – Composants lot 1      | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| 4 – Composants lot 2      | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| 5 – Validation            | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| 6 – Démos Vue / React     | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| 7 – Packaging             | À faire     |            |                                                                                                                                                                                                                                                                                                  |
