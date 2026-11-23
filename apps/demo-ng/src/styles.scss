@@ -1,0 +1,11 @@
+@import 'primeicons/primeicons.css';
+
+/* La police Marianne n'est pas embarquée (marque de l'État) : repli sur arial. */
+html {
+  font-family: Marianne, arial, sans-serif;
+}
+body {
+  margin: 0;
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+}

@@ -21,3 +21,9 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+# Projet primeuix-preset-dsfr
+
+- Lire `docs/ROADMAP.md` avant toute tâche : contexte, décisions, conventions et détail des phases.
+- Mettre à jour la section « Suivi » de `docs/ROADMAP.md` à la fin d'une phase.
+- Ne jamais lire, afficher ni commiter `apps/*/public/primeui-license.txt` (clé de licence PrimeUI).

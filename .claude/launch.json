@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "demo-ng",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "demo-ng"],
+      "port": 4200
+    }
+  ]
+}

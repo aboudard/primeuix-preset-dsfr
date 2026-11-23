@@ -1,0 +1,13 @@
+{
+  "name": "primeuix-preset-dsfr",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@primeuix/themes": "^3.1.0"
+  }
+}

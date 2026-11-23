@@ -1,0 +1,32 @@
+<main class="demo">
+  <h1>Preset primeuix DSFR – démo PrimeNG</h1>
+
+  <section>
+    <h2>Boutons</h2>
+    <div class="row">
+      <p-button label="Bouton primaire" />
+      <p-button label="Bouton secondaire" [outlined]="true" />
+      <p-button label="Bouton tertiaire" [text]="true" />
+      <p-button label="Désactivé" [disabled]="true" />
+    </div>
+  </section>
+
+  <section>
+    <h2>Champ de saisie</h2>
+    <label for="name">Libellé champ de saisie</label>
+    <input pInputText id="name" [(ngModel)]="name" />
+  </section>
+
+  <section>
+    <h2>Case à cocher</h2>
+    <p-checkbox inputId="cgu" [(ngModel)]="accepted" [binary]="true" />
+    <label for="cgu">J'accepte les conditions</label>
+  </section>
+
+  <p-button
+    [label]="dark() ? 'Thème clair' : 'Thème sombre'"
+    severity="secondary"
+    (onClick)="toggleTheme()"
+  />
+  <router-outlet />
+</main>

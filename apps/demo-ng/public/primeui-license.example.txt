@@ -1,0 +1,1 @@
+Copiez ce fichier en primeui-license.txt (ignoré par git) et remplacez ce texte par votre clé de licence PrimeUI.

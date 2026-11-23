@@ -45,3 +45,11 @@ Thumbs.db
 .claude/settings.local.json
 
 .nx/polygraph
+.angular
+
+__screenshots__/
+vitest.config.*.timestamp*
+.vitest
+
+# Clé de licence PrimeUI (locale, ne jamais commiter)
+apps/*/public/primeui-license.txt
