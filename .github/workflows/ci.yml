@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Acceptation des conditions d'utilisation du DSFR, exigée par le script
+  # preinstall de @gouvfr/dsfr (décision du mainteneur, 2026-11-24).
+  DSFR_ACCEPT_LICENSE: '1'
+  NX_NO_CLOUD: 'true'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Déterminer la base de comparaison Nx
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Formatage (Prettier)
+        run: npx nx format:check
+
+      - name: Lint, tests, build, typecheck des projets touchés
+        run: npx nx affected -t lint test build typecheck
+
+      - name: Tokens DSFR générés à jour
+        run: |
+          npx nx run extract-dsfr-tokens:extract --skip-nx-cache
+          git diff --exit-code -- packages/preset-dsfr/src/tokens/generated \
+            || { echo "::error::Tokens DSFR obsolètes : lancer 'nx run extract-dsfr-tokens:extract' et commiter le résultat."; exit 1; }
+          test -z "$(git status --porcelain -- packages/preset-dsfr/src/tokens/generated)" \
+            || { echo "::error::Fichiers générés non commités."; git status --porcelain; exit 1; }
+
+      - name: Paquet npm importable
+        run: |
+          npx nx build preset-dsfr
+          consumer="$RUNNER_TEMP/consumer"
+          mkdir -p "$consumer/node_modules/primeuix-preset-dsfr"
+          (cd dist/packages/preset-dsfr && npm pack --pack-destination "$consumer")
+          tar -xzf "$consumer"/primeuix-preset-dsfr-*.tgz \
+            -C "$consumer/node_modules/primeuix-preset-dsfr" --strip-components=1
+          # @primeuix/themes (dépendance pair) est résolu depuis node_modules du dépôt.
+          ln -s "$GITHUB_WORKSPACE/node_modules/@primeuix" "$consumer/node_modules/@primeuix"
+          cd "$consumer"
+          node --input-type=module -e "
+            import { PresetDsfr, createPresetDsfr, dsfrScales } from 'primeuix-preset-dsfr';
+            const bridged = createPresetDsfr({ bridge: true });
+            if (dsfrScales.blueFrance[800] !== '#000091') throw new Error('blueFrance.800 inattendu');
+            if (!PresetDsfr.semantic?.primary) throw new Error('preset sans primary');
+            if (!String(bridged.primitive.blueFrance[800]).includes('var(--blue-france')) throw new Error('pont inactif');
+            console.log('Import ESM du paquet OK');
+          "

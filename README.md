@@ -9,10 +9,10 @@ PrimeVue et PrimeReact.
 
 ## Contenu du dépôt
 
-| Projet | Chemin | Rôle |
-|---|---|---|
+| Projet        | Chemin                 | Rôle                                       |
+| ------------- | ---------------------- | ------------------------------------------ |
 | `preset-dsfr` | `packages/preset-dsfr` | Librairie publiable `primeuix-preset-dsfr` |
-| `demo-ng` | `apps/demo-ng` | Démo Angular / PrimeNG |
+| `demo-ng`     | `apps/demo-ng`         | Démo Angular / PrimeNG                     |
 
 Workspace Nx sans workspaces npm : les librairies sont résolues par alias `paths` dans
 `tsconfig.base.json`.
