@@ -3,11 +3,12 @@
  * Source : @gouvfr/dsfr 1.15.4 (tous les fichiers générés).
  */
 
-export * from './colors';
-export * from './decisions';
-export * from './effects';
-export * from './meta';
-export * from './radius';
-export * from './scales';
-export * from './spacing';
-export * from './typography';
+export * from './colors.js';
+export * from './decisions.js';
+export * from './effects.js';
+export * from './meta.js';
+export * from './radius.js';
+export * from './scale-vars.js';
+export * from './scales.js';
+export * from './spacing.js';
+export * from './typography.js';

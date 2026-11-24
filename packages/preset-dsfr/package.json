@@ -1,11 +1,34 @@
 {
   "name": "primeuix-preset-dsfr",
   "version": "0.0.1",
+  "description": "Preset de thème primeuix (PrimeNG, PrimeVue, PrimeReact) reprenant l'apparence du Système de Design de l'État (DSFR). Non officiel.",
+  "keywords": [
+    "primeuix",
+    "primeng",
+    "primevue",
+    "primereact",
+    "theme",
+    "preset",
+    "design-tokens",
+    "dsfr"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aboudard/primeuix-preset-dsfr.git",
+    "directory": "packages/preset-dsfr"
+  },
   "type": "module",
+  "sideEffects": false,
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
-  "dependencies": {
-    "tslib": "^2.3.0"
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "peerDependencies": {
     "@primeuix/themes": "^3.1.0"

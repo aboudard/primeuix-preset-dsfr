@@ -1,2 +1,3 @@
-export * from './lib/preset-dsfr';
-export * from './tokens/generated';
+export * from './preset.js';
+export { bridgeColor, createPalettes, type ScaleVar } from './primitive.js';
+export * from './tokens/generated/index.js';

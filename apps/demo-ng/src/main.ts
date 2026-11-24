@@ -18,6 +18,24 @@ async function loadLicense(): Promise<string | undefined> {
   }
 }
 
+/**
+ * Mode « pont » (`?bridge`) : charge le CSS du DSFR (copié depuis
+ * @gouvfr/dsfr dans dsfr/) dans la couche `dsfr`, sous celle de Prime.
+ */
+function loadDsfrCss(): void {
+  const style = document.createElement('style');
+  style.textContent = [
+    "@import url('dsfr/core/core.min.css') layer(dsfr);",
+    "@import url('dsfr/scheme/scheme.min.css') layer(dsfr);",
+  ].join('\n');
+  document.head.prepend(style);
+}
+
+const bridge = new URLSearchParams(location.search).has('bridge');
+if (bridge) loadDsfrCss();
+
 loadLicense()
-  .then((license) => bootstrapApplication(App, createAppConfig(license)))
+  .then((license) =>
+    bootstrapApplication(App, createAppConfig({ license, bridge })),
+  )
   .catch((err) => console.error(err));

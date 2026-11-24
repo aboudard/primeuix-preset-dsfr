@@ -10,6 +10,11 @@ interface LevelColor {
   value: string;
   /** Variable DSFR d'origine et mode dans lequel elle prend cette valeur. */
   source: string;
+  /**
+   * Variables DSFR (sans `--`) qui valent exactement cette couleur dans chaque
+   * mode : `light` en thème clair, `dark` en thème sombre.
+   */
+  vars: Partial<Record<Mode, string>>;
 }
 
 type Levels = Map<number, Partial<Record<ColorState, LevelColor>>>;
@@ -70,6 +75,7 @@ export interface ScaleEntry {
   step: string;
   value: string;
   source: string;
+  vars: Partial<Record<Mode, string>>;
 }
 
 /** Index des couleurs d'une famille par niveau de luminosité et par état. */
@@ -86,10 +92,13 @@ export function indexLevels(colors: ColorVariable[]): Levels {
     levels.set(level, entry);
     // Le premier nom rencontré fait foi (plusieurs couples partagent souvent
     // un même niveau, avec la même valeur).
-    entry[state] ??= {
+    const existing = (entry[state] ??= {
       value,
       source: `${color.name} (${mode === 'light' ? 'clair' : 'sombre'})`,
-    };
+      vars: {},
+    });
+    // Première variable qui vaut cette couleur dans ce mode.
+    if (existing.value === value) existing.vars[mode] ??= color.name;
   };
   for (const color of colors) {
     const key = parseColorKey(color.key);
@@ -156,6 +165,7 @@ function colorAt(levels: Levels, level: number, state: ColorState): LevelColor {
   return {
     value: mixHex(low.value, high.value, (level - below) / (above - below)),
     source: `interpolé (niveau ${level}) entre ${low.source} et ${high.source}`,
+    vars: {},
   };
 }
 
@@ -194,6 +204,11 @@ export function buildScale(
             : 'base';
       color = colorAt(levels, sun.lightLevel, state);
     }
-    return { step, value: color.value, source: color.source };
+    return {
+      step,
+      value: color.value,
+      source: color.source,
+      vars: { ...color.vars },
+    };
   });
 }

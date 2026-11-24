@@ -21,16 +21,17 @@ L'extraction est déterministe : deux exécutions successives produisent des fic
 
 ## Fichiers générés
 
-| Fichier         | Export           | Contenu                                                                                           |
-| --------------- | ---------------- | ------------------------------------------------------------------------------------------------- |
-| `meta.ts`       | `DSFR_VERSION`   | version de `@gouvfr/dsfr` source                                                                  |
-| `colors.ts`     | `dsfrColors`     | couleurs primitives par famille, `{ light, dark }` par nom DSFR                                   |
-| `scales.ts`     | `dsfrScales`     | échelles Prime 50 → 950 par famille (0 → 950 pour `grey`)                                         |
-| `decisions.ts`  | `dsfrDecisions`  | tokens décisionnels (`background-*`, `text-*`, `border-*`, `artwork-*`) résolus `{ light, dark }` |
-| `typography.ts` | `dsfrTypography` | familles, graisses, corps, titres et « display » (mobile / ≥ 48em), textes                        |
-| `spacing.ts`    | `dsfrSpacing`    | espacements `v` (0,25 rem) et `w` (0,5 rem)                                                       |
-| `radius.ts`     | `dsfrRadius`     | `none`, `field` (champs), échelle des rayons uniformes                                            |
-| `effects.ts`    | `dsfrEffects`    | anneau de focus, ombres `raised` / `overlap` / `lifted` (clair / sombre)                          |
+| Fichier         | Export           | Contenu                                                                                            |
+| --------------- | ---------------- | -------------------------------------------------------------------------------------------------- |
+| `meta.ts`       | `DSFR_VERSION`   | version de `@gouvfr/dsfr` source                                                                   |
+| `colors.ts`     | `dsfrColors`     | couleurs primitives par famille, `{ light, dark }` par nom DSFR                                    |
+| `scales.ts`     | `dsfrScales`     | échelles Prime 50 → 950 par famille (0 → 950 pour `grey`)                                          |
+| `scale-vars.ts` | `dsfrScaleVars`  | pour chaque pas : variable DSFR exacte en clair et en sombre (`null` si aucune), pour le mode pont |
+| `decisions.ts`  | `dsfrDecisions`  | tokens décisionnels (`background-*`, `text-*`, `border-*`, `artwork-*`) résolus `{ light, dark }`  |
+| `typography.ts` | `dsfrTypography` | familles, graisses, corps, titres et « display » (mobile / ≥ 48em), textes                         |
+| `spacing.ts`    | `dsfrSpacing`    | espacements `v` (0,25 rem) et `w` (0,5 rem)                                                        |
+| `radius.ts`     | `dsfrRadius`     | `none`, `field` (champs), échelle des rayons uniformes                                             |
+| `effects.ts`    | `dsfrEffects`    | anneau de focus, ombres `raised` / `overlap` / `lifted` (clair / sombre)                           |
 
 Tous ces exports sont aussi publics depuis `primeuix-preset-dsfr`.
 

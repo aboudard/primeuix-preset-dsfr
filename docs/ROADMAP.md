@@ -63,7 +63,11 @@ TypeScript 6.0 · Node 24 · npm 11.
   imports avec extension `.ts`, syntaxe effaçable uniquement (`erasableSyntaxOnly`).
 - `@gouvfr/dsfr` est installé en devDependency **avec `--ignore-scripts`** (son postinstall exige
   un projet DSFR initialisé). Il sert uniquement de **source de tokens**, jamais au runtime.
-- Démo : `npm exec nx -- serve demo-ng` → http://localhost:4200.
+- Démo : `npm exec nx -- serve demo-ng` → http://localhost:4200 ; `?bridge` charge `dsfr.css`
+  (couche `dsfr`) et active le mode pont du preset.
+- Preset : code ESM `nodenext` → imports relatifs **avec extension `.js`** (`./preset.js`), y compris
+  dans le barrel généré. Tokens sémantiques clair/sombre en `light-dark()` (comme Nora 3), pas de
+  `colorScheme`.
 - Langue : documentation et commentaires en français ; noms de code en anglais.
 
 ### Arborescence
@@ -71,10 +75,14 @@ TypeScript 6.0 · Node 24 · npm 11.
 ```
 apps/demo-ng/                     # démo PrimeNG (Angular 22, zoneless, vitest)
   public/primeui-license.txt      # clé locale (ignorée)
-  src/main.ts                     # lit la clé puis bootstrap
-  src/app/app.config.ts           # createAppConfig(license) + providePrimeNG
-packages/preset-dsfr/             # librairie publiable primeuix-preset-dsfr
-  src/lib/preset-dsfr.ts          # PresetDsfr = definePreset(Nora, {...})
+  src/main.ts                     # lit la clé, charge dsfr.css si ?bridge, puis bootstrap
+  src/app/app.config.ts           # createAppConfig({ license, bridge }) + providePrimeNG
+packages/preset-dsfr/             # librairie publiable primeuix-preset-dsfr (ESM, voir README)
+  src/preset.ts                   # createPresetDsfr({ bridge }), PresetDsfr
+  src/primitive.ts                # palettes DSFR (+ pont light-dark/var), rayons
+  src/semantic.ts                 # primary, focusRing…
+  src/components/index.ts         # surcharges par composant (phase 4)
+  src/css/index.ts                # CSS d'appoint (phase 4)
   src/tokens/generated/           # tokens DSFR générés (phase 1) – ne pas éditer
 tools/extract-dsfr-tokens/        # extraction des tokens (cibles extract, test, typecheck)
 docs/ROADMAP.md                   # ce fichier
@@ -87,7 +95,7 @@ Arborescence cible du preset (à construire au fil des phases) :
 packages/preset-dsfr/src/
   tokens/generated/   # sortie du script d'extraction (phase 1) – ne pas éditer à la main
   primitive.ts        # palettes DSFR, rayons, typo, espacements
-  semantic.ts         # primary, surface, formField, focusRing, colorScheme light/dark
+  semantic.ts         # primary, surface, formField, focusRing (clair/sombre en light-dark())
   components/*.ts     # surcharges de tokens par composant
   css/*.ts            # CSS d'appoint injecté via la clé `css`
   index.ts            # export PresetDsfr
@@ -139,7 +147,7 @@ espacements).
 **Fin de phase** : la cible `extract` est reproductible, les fichiers générés sont commités, le
 preset compile et la démo est inchangée visuellement (ou améliorée), lint/test/build verts.
 
-### Phase 2 – Architecture du preset
+### Phase 2 – Architecture du preset ✅
 
 **But** : découper le preset selon l'arborescence cible et préparer l'extensibilité.
 
@@ -229,14 +237,14 @@ lint/test/build verts.
 
 ## Suivi
 
-| Phase                     | Statut      | Date       | Notes                                                                                                                                                                                                                                                                                            |
-| ------------------------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 0 – Initialisation        | ✅ Terminée | 2026-11-23 |                                                                                                                                                                                                                                                                                                  |
-| 1 – Extraction des tokens | ✅ Terminée | 2026-11-23 | 24 familles, 612 tokens décisionnels, typo, espacements, rayons, focus. Échelles non strictement monotones pour certaines familles (600/700 = états DSFR) et pas interpolés pour les couleurs système : voir `docs/TOKENS.md`. Avertissement de budget du bundle `demo-ng` (500 kB) préexistant. |
-| 2 – Architecture          | À faire     |            |                                                                                                                                                                                                                                                                                                  |
-| 3 – Tokens sémantiques    | À faire     |            |                                                                                                                                                                                                                                                                                                  |
-| 4 – Composants lot 1      | À faire     |            |                                                                                                                                                                                                                                                                                                  |
-| 4 – Composants lot 2      | À faire     |            |                                                                                                                                                                                                                                                                                                  |
-| 5 – Validation            | À faire     |            |                                                                                                                                                                                                                                                                                                  |
-| 6 – Démos Vue / React     | À faire     |            |                                                                                                                                                                                                                                                                                                  |
-| 7 – Packaging             | À faire     |            |                                                                                                                                                                                                                                                                                                  |
+| Phase                     | Statut      | Date       | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------- | ----------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 – Initialisation        | ✅ Terminée | 2026-11-23 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 1 – Extraction des tokens | ✅ Terminée | 2026-11-23 | 24 familles, 612 tokens décisionnels, typo, espacements, rayons, focus. Échelles non strictement monotones pour certaines familles (600/700 = états DSFR) et pas interpolés pour les couleurs système : voir `docs/TOKENS.md`. Avertissement de budget du bundle `demo-ng` (500 kB) préexistant.                                                                                                                                                                                                                                                                                                                                                                        |
+| 2 – Architecture          | ✅ Terminée | 2026-11-24 | Preset découpé (`preset`, `primitive`, `semantic`, `components/`, `css/`), sémantique en `light-dark()`. Pont : les primitives DSFR changent de valeur selon le thème, donc chaque pas renvoie vers la variable exacte de chaque thème via `light-dark(var(--a, #hex), var(--b, #hex))` (nouveau fichier généré `scale-vars.ts`) au lieu d'un simple `var()`. `cssLayer` : DSFR dans la couche `dsfr` sous `primeng`, vérifié dans la démo (`?bridge`). Paquet ESM `nodenext`, `exports`, `sideEffects: false`, sans `tslib` ; tarball importé avec Node et typé en `nodenext`. Licence MIT reprise de la racine, sans fichier LICENSE : à confirmer avant publication. |
+| 3 – Tokens sémantiques    | À faire     |            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 4 – Composants lot 1      | À faire     |            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 4 – Composants lot 2      | À faire     |            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 5 – Validation            | À faire     |            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 6 – Démos Vue / React     | À faire     |            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 7 – Packaging             | À faire     |            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |

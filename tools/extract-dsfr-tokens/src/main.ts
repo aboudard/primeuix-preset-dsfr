@@ -56,6 +56,7 @@ const colors = Object.fromEntries(
 
 // Échelles Prime 50 → 950 (0 → 950 pour les gris).
 const scaleComments = new Map<string, string>();
+const scaleVars: Record<string, Record<string, unknown>> = {};
 const scales = Object.fromEntries(
   [...families].map(([family, list]) => {
     const name = camelCase(family);
@@ -66,6 +67,12 @@ const scales = Object.fromEntries(
     for (const entry of entries) {
       scaleComments.set(`${name}.${entry.step}`, entry.source);
     }
+    scaleVars[name] = Object.fromEntries(
+      entries.map((e) => [
+        e.step,
+        { light: e.vars.light ?? null, dark: e.vars.dark ?? null },
+      ]),
+    );
     return [name, Object.fromEntries(entries.map((e) => [e.step, e.value]))];
   }),
 );
@@ -105,6 +112,15 @@ const files: GeneratedFile[] = [
       scales,
       scaleComments,
       '\nexport type DsfrScaleFamily = keyof typeof dsfrScales;\n',
+    ),
+  },
+  {
+    name: 'scale-vars.ts',
+    content: constFile(
+      head(coreSources),
+      'Pour chaque pas de `dsfrScales` : variable CSS DSFR (sans `--`) qui vaut exactement ce pas en thème clair (`light`) et en thème sombre (`dark`) ; `null` si aucune (pas interpolé ou niveau absent dans ce mode). Sert au mode « pont » du preset.',
+      'dsfrScaleVars',
+      scaleVars,
     ),
   },
   {
@@ -160,7 +176,7 @@ const modules = files.map((f) => f.name.replace(/\.ts$/, '')).sort();
 files.push({
   name: 'index.ts',
   content: `${head(['tous les fichiers générés'])}\n${modules
-    .map((m) => `export * from './${m}';`)
+    .map((m) => `export * from './${m}.js';`)
     .join('\n')}\n`,
 });
 
