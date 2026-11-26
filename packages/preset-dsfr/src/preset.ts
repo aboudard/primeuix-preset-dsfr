@@ -1,6 +1,6 @@
 import { definePreset, type Preset } from '@primeuix/themes';
 import Nora from '@primeuix/themes/nora';
-import { components } from './components/index.js';
+import { createComponents } from './components/index.js';
 import { css } from './css/index.js';
 import { createPrimitive } from './primitive.js';
 import { createSemantic } from './semantic.js';
@@ -22,8 +22,8 @@ export function createPresetDsfr(options: PresetDsfrOptions = {}): Preset {
   // pouvoir déclarer les palettes DSFR (blueFrance, redMarianne…).
   return definePreset(Nora as Preset, {
     primitive: createPrimitive(options),
-    semantic: createSemantic(),
-    components,
+    semantic: createSemantic(options),
+    components: createComponents(options),
     ...(css ? { css } : {}),
   });
 }

@@ -1,7 +1,13 @@
 <main class="demo">
   <h1>Preset primeuix DSFR – démo PrimeNG</h1>
 
-  <section>
+  <p-button
+    [label]="dark() ? 'Thème clair' : 'Thème sombre'"
+    severity="secondary"
+    (onClick)="toggleTheme()"
+  />
+
+  <section id="buttons">
     <h2>Boutons</h2>
     <div class="row">
       <p-button label="Bouton primaire" />
@@ -11,22 +17,103 @@
     </div>
   </section>
 
-  <section>
-    <h2>Champ de saisie</h2>
+  <section id="fields">
+    <h2>Champs de saisie</h2>
     <label for="name">Libellé champ de saisie</label>
-    <input pInputText id="name" [(ngModel)]="name" />
+    <input pInputText id="name" [(ngModel)]="name" placeholder="Texte" />
+    <label for="invalid">Champ en erreur</label>
+    <input pInputText id="invalid" [invalid]="true" value="Valeur" />
+    <label for="disabled">Champ désactivé</label>
+    <input pInputText id="disabled" [disabled]="true" value="Valeur" />
+    <label for="message">Zone de texte</label>
+    <textarea pTextarea id="message" rows="3"></textarea>
+    <label for="region">Liste déroulante</label>
+    <p-select
+      inputId="region"
+      [options]="regions"
+      [(ngModel)]="region"
+      placeholder="Sélectionner une option"
+    />
   </section>
 
-  <section>
-    <h2>Case à cocher</h2>
-    <p-checkbox inputId="cgu" [(ngModel)]="accepted" [binary]="true" />
-    <label for="cgu">J'accepte les conditions</label>
+  <section id="choices">
+    <h2>Cases, radios, interrupteur</h2>
+    <div class="row">
+      <p-checkbox inputId="cgu" [(ngModel)]="accepted" [binary]="true" />
+      <label for="cgu">J'accepte les conditions</label>
+    </div>
+    <div class="row">
+      @for (option of ['Oui', 'Non']; track option) {
+      <p-radiobutton
+        [inputId]="'radio-' + option"
+        name="choice"
+        [value]="option"
+        [(ngModel)]="choice"
+      />
+      <label [for]="'radio-' + option">{{ option }}</label>
+      }
+    </div>
+    <div class="row">
+      <p-toggleswitch inputId="notify" [(ngModel)]="notify" />
+      <label for="notify">Recevoir les notifications</label>
+    </div>
   </section>
 
-  <p-button
-    [label]="dark() ? 'Thème clair' : 'Thème sombre'"
-    severity="secondary"
-    (onClick)="toggleTheme()"
-  />
+  <section id="feedback">
+    <h2>Tags et messages</h2>
+    <div class="row">
+      <p-tag value="Tag" />
+      <p-tag value="Succès" severity="success" />
+      <p-tag value="Erreur" severity="danger" />
+    </div>
+    <p-message severity="info">Message d'information</p-message>
+    <p-message severity="error">Message d'erreur</p-message>
+  </section>
+
+  <section id="tabs">
+    <h2>Onglets et accordéon</h2>
+    <p-tabs value="t1">
+      <p-tablist>
+        <p-tab value="t1">Onglet 1</p-tab>
+        <p-tab value="t2">Onglet 2</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="t1">Contenu de l'onglet 1</p-tabpanel>
+        <p-tabpanel value="t2">Contenu de l'onglet 2</p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+    <p-accordion value="a1">
+      <p-accordion-panel value="a1">
+        <p-accordion-header>Intitulé accordéon</p-accordion-header>
+        <p-accordion-content>Contenu de l'accordéon</p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  </section>
+
+  <section id="table">
+    <h2>Tableau</h2>
+    <p-table
+      [value]="rows"
+      [paginator]="true"
+      [rows]="3"
+      selectionMode="single"
+      [(selection)]="selected"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Commune</th>
+          <th>Département</th>
+          <th>Population</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-row>
+        <tr [pSelectableRow]="row">
+          <td>{{ row.city }}</td>
+          <td>{{ row.dept }}</td>
+          <td>{{ row.pop }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
   <router-outlet />
 </main>

@@ -64,6 +64,15 @@ Utilisez `darkModeSelector: '[data-fr-theme="dark"]'`, le sélecteur du DSFR : u
 `data-fr-theme` sur `<html>` bascule alors le DSFR et Prime. Les tokens du preset passent par
 `light-dark()` (comme Nora), qui suit le `color-scheme` posé par Prime.
 
+### Rendu global
+
+Sans retouche par composant, le preset applique déjà : bleu France en couleur primaire (repos /
+survol / actif DSFR, clair et sombre), surfaces et textes gris DSFR, angles droits, anneau de
+focus `2px solid #0a76f6` décalé de `2px`, police et corps DSFR (`1rem`), champs DSFR (fond
+`background-contrast-grey`, sans bordure, trait bas de 2 px porté par le token `formField.shadow`,
+rayon `0.25rem 0.25rem 0 0`). Les variantes et états fins des composants (boutons secondaires,
+messages, onglets, tags…) viennent composant par composant.
+
 ### Police
 
 Marianne **n'est pas embarquée** (marque de l'État). La pile utilisée est
@@ -72,14 +81,15 @@ qui la déclare).
 
 ## API
 
-| Export                                                                                                                                     | Rôle                                                                                 |
-| ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `PresetDsfr`                                                                                                                               | Preset prêt à l'emploi, valeurs autonomes (= `createPresetDsfr()`).                  |
-| `createPresetDsfr(options?)`                                                                                                               | Crée le preset. Options : voir ci-dessous.                                           |
-| `PresetDsfrOptions`                                                                                                                        | Type des options.                                                                    |
-| `createPalettes(options?)`                                                                                                                 | Palettes DSFR au format Prime (`blueFrance`, `grey`…), utiles pour un preset dérivé. |
-| `bridgeColor(hex, vars)`                                                                                                                   | Valeur « pont » d'une couleur (voir mode pont).                                      |
-| `dsfrScales`, `dsfrScaleVars`, `dsfrColors`, `dsfrDecisions`, `dsfrTypography`, `dsfrSpacing`, `dsfrRadius`, `dsfrEffects`, `DSFR_VERSION` | Tokens extraits de `@gouvfr/dsfr` (voir `docs/TOKENS.md` du dépôt).                  |
+| Export                                                                                                                                     | Rôle                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `PresetDsfr`                                                                                                                               | Preset prêt à l'emploi, valeurs autonomes (= `createPresetDsfr()`).                                   |
+| `createPresetDsfr(options?)`                                                                                                               | Crée le preset. Options : voir ci-dessous.                                                            |
+| `PresetDsfrOptions`                                                                                                                        | Type des options.                                                                                     |
+| `createPalettes(options?)`                                                                                                                 | Palettes DSFR au format Prime (`blueFrance`, `grey`…), utiles pour un preset dérivé.                  |
+| `bridgeColor(hex, vars)`                                                                                                                   | Valeur « pont » d'une couleur (voir mode pont).                                                       |
+| `dsfrDecision(name, options?)`, `dsfrShadow(name)`, `paletteRef(hex)`                                                                      | Valeur Prime d'un token décisionnel DSFR (`light-dark()` de références de palette), d'une ombre DSFR. |
+| `dsfrScales`, `dsfrScaleVars`, `dsfrColors`, `dsfrDecisions`, `dsfrTypography`, `dsfrSpacing`, `dsfrRadius`, `dsfrEffects`, `DSFR_VERSION` | Tokens extraits de `@gouvfr/dsfr` (voir `docs/TOKENS.md` du dépôt).                                   |
 
 ```ts
 import { dsfrDecisions, dsfrScales, DSFR_VERSION } from 'primeuix-preset-dsfr';
@@ -101,9 +111,9 @@ const MyPreset = definePreset(PresetDsfr, {
 
 ### Options de `createPresetDsfr`
 
-| Option   | Défaut  | Effet                                                                  |
-| -------- | ------- | ---------------------------------------------------------------------- |
-| `bridge` | `false` | Mode « pont » : les palettes renvoient vers les variables CSS du DSFR. |
+| Option   | Défaut  | Effet                                                                                    |
+| -------- | ------- | ---------------------------------------------------------------------------------------- |
+| `bridge` | `false` | Mode « pont » : palettes et tokens sémantiques renvoient vers les variables CSS du DSFR. |
 
 ## Mode pont (`bridge: true`)
 
@@ -121,6 +131,15 @@ choisit donc, pour chaque thème, la variable qui vaut exactement le pas, et les
 light-dark(var(--blue-france-sun-113-625, #000091), var(--blue-france-975-sun-113, #000091))
 /* blueFrance.500 : même variable dans les deux thèmes */
 var(--blue-france-main-525, #6a6af4)
+```
+
+Les tokens sémantiques (texte, surfaces de contenu, champs…) sont dérivés des **tokens
+décisionnels** du DSFR. En mode pont, ils renvoient directement vers la variable décisionnelle, qui
+bascule elle-même avec `data-fr-theme` :
+
+```css
+/* text.color */
+var(--text-default-grey, light-dark(var(--p-grey-700), var(--p-grey-400)))
 ```
 
 Un pas sans variable DSFR exacte dans un thème (pas interpolé, niveau absent) garde sa valeur

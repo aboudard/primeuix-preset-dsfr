@@ -1,4 +1,5 @@
 import {
+  dsfrRadius,
   dsfrScales,
   dsfrScaleVars,
   type DsfrScaleFamily,
@@ -53,13 +54,16 @@ export function createPalettes({ bridge = false }: PrimitiveOptions = {}) {
 export function createPrimitive(options: PrimitiveOptions = {}) {
   return {
     ...createPalettes(options),
+    // DSFR : angles droits par défaut. Les rayons propres à certains
+    // composants (champs, cases à cocher, tags) sont posés au niveau
+    // sémantique ou composant.
     borderRadius: {
-      none: '0',
-      xs: '0.25rem',
-      sm: '0.25rem',
-      md: '0.25rem',
-      lg: '0.25rem',
-      xl: '0.5rem',
+      none: dsfrRadius.none,
+      xs: dsfrRadius.none,
+      sm: dsfrRadius.none,
+      md: dsfrRadius.none,
+      lg: dsfrRadius.none,
+      xl: dsfrRadius.none,
     },
   };
 }

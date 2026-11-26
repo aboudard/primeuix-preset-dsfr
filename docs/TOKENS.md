@@ -95,3 +95,60 @@ définis les plus proches ; `main` absent est pris au milieu du couple sun (ex. 
   600 / 700 / 800 restent les vraies couleurs d'action DSFR.
 - 900 / 950 sont des teintes sombres désaturées (fonds du mode sombre DSFR), pas des versions
   foncées de la couleur d'action.
+
+## Tokens sémantiques Prime ← tokens décisionnels DSFR
+
+Les tokens sémantiques du preset (`src/semantic.ts`) sont construits avec `dsfrDecision(nom)` :
+clair et sombre du token décisionnel DSFR en `light-dark()`, chaque couleur remplacée par le pas
+de palette correspondant quand il existe (`#3a3a3a` → `{grey.700}`), sinon gardée en hexadécimal
+(états hover / active du mode sombre, absents des échelles). En mode pont, la valeur est
+enveloppée dans `var(--<token décisionnel>, …)`.
+
+| Token Prime                                                      | Token DSFR                                                          | Clair / sombre        |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------- | --------------------- |
+| `primary.color` / `hoverColor` / `activeColor`                   | `background-action-high-blue-france` (+ `-hover`, `-active`)        | `#000091` / `#8585f6` |
+| `primary.contrastColor`                                          | `text-inverted-blue-france`                                         | `#f5f5fe` / `#000091` |
+| `surface.0` → `surface.950`                                      | échelle `grey` (identique dans les deux thèmes)                     | `#ffffff` → `#161616` |
+| `highlight.background` / `focusBackground`                       | `background-active-blue-france` (+ `-hover`)                        | `#000091` / `#8585f6` |
+| `highlight.color`                                                | `text-inverted-blue-france`                                         |                       |
+| `text.color` / `hoverMutedColor`                                 | `text-default-grey`                                                 | `#3a3a3a` / `#cecece` |
+| `text.hoverColor`                                                | `text-title-grey`                                                   | `#161616` / `#ffffff` |
+| `text.mutedColor`                                                | `text-mention-grey`                                                 | `#666666` / `#929292` |
+| `content.background` / `hoverBackground`                         | `background-default-grey` (+ `-hover`)                              | `#ffffff` / `#161616` |
+| `content.borderColor`, `overlay.*.borderColor`                   | `border-default-grey`                                               | `#dddddd` / `#353535` |
+| `overlay.select` / `popover` (fond, ombre)                       | `background-overlap-grey`, ombre `overlap`                          |                       |
+| `overlay.modal` (fond, ombre)                                    | `background-lifted-grey`, ombre `lifted`                            |                       |
+| `list.option.focusBackground`, `navigation.item.focusBackground` | `background-overlap-grey-hover`                                     |                       |
+| `navigation.item.activeBackground` / `activeColor`               | `background-open-blue-france` / `text-active-blue-france`           |                       |
+| `formField.background` (+ `filled*`)                             | `background-contrast-grey` (+ `-hover`)                             | `#eeeeee` / `#242424` |
+| `formField.color`, `iconColor`                                   | `text-default-grey`                                                 |                       |
+| `formField.placeholderColor`, `floatLabel*Color`                 | `text-mention-grey`                                                 |                       |
+| `formField.disabledBackground` / `disabledColor`                 | `background-disabled-grey` / `text-disabled-grey`                   |                       |
+| `formField.invalidBorderColor`                                   | `border-plain-error`                                                | `#ce0500` / `#ff5655` |
+| `formField.shadow`                                               | `inset 0 -2px 0 0` + `border-plain-grey` (trait bas de `.fr-input`) | `#3a3a3a` / `#cecece` |
+
+Valeurs fixes (non colorées) :
+
+| Token Prime                            | Valeur                              | Source DSFR                      |
+| -------------------------------------- | ----------------------------------- | -------------------------------- |
+| `typography.fontFamily`                | `"Marianne", arial, sans-serif`     | `dsfrTypography.fontFamily.base` |
+| `typography.fontSize` / `lineHeight`   | `1rem` / `1.5`                      | corps DSFR (`1rem` / `1.5rem`)   |
+| `formField.fontSize` (`sm`, `lg`)      | `1rem` (`0.875rem`, `1.125rem`)     | corps, `text.sm`, `text.lg`      |
+| `formField.paddingX` / `paddingY`      | `1rem` / `0.5rem`                   | `.fr-input` (hauteur 2,5 rem)    |
+| `formField.borderRadius`               | `0.25rem 0.25rem 0 0`               | `dsfrRadius.field`               |
+| `formField.borderColor` (hover, focus) | `transparent`                       | `.fr-input` n'a pas de bordure   |
+| `focusRing`, `formField.focusRing`     | `2px solid #0a76f6`, décalage `2px` | `dsfrEffects.focusRing`          |
+| `borderRadius.*` (primitive)           | `0`                                 | angles droits du DSFR            |
+| `mask.background`                      | `rgba(22, 22, 22, 0.64)`            | fond de `.fr-modal`              |
+| `iconSize`                             | `1rem`                              |                                  |
+
+Les ombres DSFR ne diffèrent entre clair et sombre que par leur couleur : `dsfrShadow()` la passe
+en `light-dark()` (`0 2px 6px light-dark(rgba(0, 0, 18, 0.16), rgba(0, 0, 18, 0.32))`).
+
+Dans Nora, la case à cocher, le bouton radio et l'interrupteur réutilisent les tokens
+`formField` (fond, bordure, ombre). Pour qu'ils restent lisibles avec le champ DSFR, ils reçoivent
+dès maintenant une surcharge minimale dans `src/components/index.ts` : fond
+`background-default-grey`, bordure `border-action-high-blue-france`, sans trait bas.
+De même, `button`, `splitbutton` et `selectbutton` prennent dans Nora le rayon des champs
+(`{form.field.border.radius}`) : ils sont remis à angles droits (`{border.radius.none}`), comme
+`.fr-btn`.
