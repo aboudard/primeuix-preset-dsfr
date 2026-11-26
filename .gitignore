@@ -53,3 +53,4 @@ vitest.config.*.timestamp*
 
 # Clé de licence PrimeUI (locale, ne jamais commiter)
 apps/*/public/primeui-license.txt
+.playwright-mcp/
