@@ -7,7 +7,8 @@ import {
   dsfrSpacing,
   dsfrTypography,
   DSFR_VERSION,
-} from './generated';
+  dsfrScaleVars,
+} from './generated/index.js';
 
 describe('tokens DSFR générés', () => {
   it('indique la version source du DSFR', () => {
@@ -62,6 +63,44 @@ describe('tokens DSFR générés', () => {
     expect(dsfrScales.blueFrance[700]).toBe('#1212ff');
     expect(dsfrScales.blueFrance[600]).toBe('#2323ff');
     expect(dsfrScales.redMarianne[500]).toBe('#e1000f');
+  });
+
+  it('associe à chaque pas les variables DSFR exactes de chaque thème', () => {
+    const colors = dsfrColors as Record<
+      string,
+      Record<string, { light: string; dark: string }>
+    >;
+    const families = dsfrScaleVars as Record<
+      string,
+      Record<string, { light: string | null; dark: string | null }>
+    >;
+    const scales = dsfrScales as Record<string, Record<string, string>>;
+    const prefix = (family: string) =>
+      family.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`) + '-';
+    for (const [family, steps] of Object.entries(families)) {
+      for (const [step, vars] of Object.entries(steps)) {
+        for (const mode of ['light', 'dark'] as const) {
+          const name = vars[mode];
+          if (!name) continue;
+          const key = name.slice(prefix(family).length);
+          expect(colors[family][key][mode], `${name} (${mode})`).toBe(
+            scales[family][step],
+          );
+        }
+      }
+    }
+    expect(dsfrScaleVars.blueFrance[800]).toEqual({
+      light: 'blue-france-sun-113-625',
+      dark: 'blue-france-975-sun-113',
+    });
+    expect(dsfrScaleVars.blueFrance[400]).toEqual({
+      light: null,
+      dark: 'blue-france-sun-113-625',
+    });
+    expect(dsfrScaleVars.blueFrance[500]).toEqual({
+      light: 'blue-france-main-525',
+      dark: 'blue-france-main-525',
+    });
   });
 
   it('résout les tokens décisionnels en clair et en sombre', () => {

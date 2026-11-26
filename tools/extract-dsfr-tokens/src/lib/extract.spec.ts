@@ -128,6 +128,20 @@ describe('couleurs', () => {
     });
   });
 
+  it('enregistre la variable exacte de chaque thème pour chaque pas', () => {
+    const family = groupByFamily(colors).get('blue-france') ?? [];
+    const vars = Object.fromEntries(
+      buildScale(family, COLOR_SCALE).map((e) => [e.step, e.vars]),
+    );
+    expect(vars['800']).toEqual({ light: 'blue-france-sun-113-625' });
+    expect(vars['400']).toEqual({ dark: 'blue-france-sun-113-625' });
+    expect(vars['500']).toEqual({
+      light: 'blue-france-main-525',
+      dark: 'blue-france-main-525',
+    });
+    expect(vars['950']).toEqual({ dark: 'blue-france-975-75' });
+  });
+
   it('interpole un niveau absent', () => {
     const family = groupByFamily(colors).get('blue-france') ?? [];
     const withoutMain = family.filter((c) => c.key !== 'main-525');

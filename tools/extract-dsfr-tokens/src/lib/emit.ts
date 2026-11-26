@@ -17,6 +17,7 @@ export function toLiteral(
   indent = '',
 ): string {
   if (typeof value === 'string') return `'${value.replace(/'/g, "\\'")}'`;
+  if (value === null) return 'null';
   if (typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
   }

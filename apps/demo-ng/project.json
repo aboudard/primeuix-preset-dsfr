@@ -19,6 +19,11 @@
           {
             "glob": "**/*",
             "input": "apps/demo-ng/public"
+          },
+          {
+            "glob": "{core/core.min.css,scheme/scheme.min.css,fonts/*}",
+            "input": "node_modules/@gouvfr/dsfr/dist",
+            "output": "dsfr"
           }
         ],
         "styles": ["apps/demo-ng/src/styles.scss"]
